@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Instant-runoff voting</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="page-header">
+                <h1>Instant-runoff voting tool</h1>
+                <p class="lead">Description</p>
+            </div>
+
+            <h2>Description</h2>
+            <p>description text</p>
+            <ul>
+                <li>- Source code</li>
+                <li>- License</li>
+                <li>- powered by bootstrap and jquery</li>
+                <li>- by PeterTheOne</li>
+            </ul>
+
+            <hr />
+
+            <h2>Input</h2>
+
+            <form role="form">
+                <div class="form-group col-md-6">
+                    <h3>Candidates</h3>
+                    <p>Please enter the names of the candidates, one per line.</p>
+                    <p>Example:</p>
+                    <pre>Barack Obama<br />Mitt Romney<br />...</pre>
+                    <label for="candidates">Candidates</label>
+                    <textarea id="candidates" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <h3>Ballots</h3>
+                    <p>
+                        Please enter one ballot per line. A ballot consists of
+                        ranking number <code>1 2 3 4 ...</code> in a row separated
+                        by a comma<code>,</code>. One ballot has the same amount
+                        of ranking number as there candidates. The first number
+                        is the rank of the first candidate on this ballot, etc.
+                        Spaces are ignored.
+                    </p>
+                    <p>Example:</p>
+                    <pre>3, 2, 1, 4<br />4, 3, 1, 2<br />1, 3, 4, 2<br />...</pre>
+                    <label for="ballots">Ballots</label>
+                    <textarea id="ballots" class="form-control" rows="3"></textarea>
+                </div>
+
+                <button id="submit" type="submit" class="btn btn-default">Submit</button>
+            </form>
+
+            <div id="result-group">
+                <hr />
+
+                <h2>Result</h2>
+                <pre id="result">Please submit your request.</pre>
+            </div>
+
+        </div>
+
+
+        <script src="js/lib/jquery-1.10.2.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="js/script.js"></script>
+    </body>
+</html>
