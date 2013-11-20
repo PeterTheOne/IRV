@@ -104,7 +104,7 @@ $(function() {
             var ratioOfWinnerVotes = firstVotesCount[roundWinners[0]] / ballots.length;
             var ratioOfLoserVotes = firstVotesCount[roundLosers[0]] / ballots.length;
 
-            result.append('<br />Number of first votes per Candidate:<br />');
+            result.append('<br />Number of first votes per candidate:<br />');
             for (i = 0; i < candidateNames.length; i++) {
                 result.append(candidateNames[i] + ': ' + firstVotesCount[i] + '<br />');
             }
@@ -123,7 +123,7 @@ $(function() {
                     firstVotesCount[roundLosers[0]] + ' votes (' + (100 * ratioOfLoserVotes)+
                     '%)<br />');
             } else {
-                result.append(firstVotesCount.length + ' candidates have the lowest number of votes with ' +
+                result.append(roundLosers.length + ' candidates have the lowest number of votes with ' +
                     firstVotesCount[roundLosers[0]] + ' votes (' + (100 * ratioOfLoserVotes)+
                     '%)<br />');
             }
@@ -142,7 +142,8 @@ $(function() {
             }
 
             if (roundLosers.length > 1) {
-                var randomIndex = Math.round(Math.random() * (roundWinners.length - 1));
+                var randomIndex = Math.round(Math.random() * (roundLosers.length - 1));
+                console.log(randomIndex);
                 roundLoser = roundLosers[randomIndex];
                 result.append(candidateNames[roundLoser] + ' was randomly selected as the loser of the round.<br />');
             }
