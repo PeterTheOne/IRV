@@ -10,13 +10,13 @@ function readBallots() {
         ballots[i] = ballots[i].replace(/\s+/g, '');
         ballots[i] = ballots[i].split(',');
         for (var j = 0; j < ballots[i].length; j++) {
-            ballots[i][j] = parseInt(ballots[i][j]);
+            ballots[i][j] = ballots[i][j] === '' ? 0 : parseInt(ballots[i][j]);
         }
     }
     return ballots;
 }
 
-function validateInput(candidates, ballots) {
+function validateInput(candidates, ballots, incompleteBallots) {
     if (candidates.length == 1 && $.trim(candidates['0']) === '') {
         result.append('You didn\'t enter any candidates!<br />');
         return false;
@@ -27,30 +27,66 @@ function validateInput(candidates, ballots) {
         return false;
     }
 
+    var lowestAllowedRank = incompleteBallots ? 0 : 1;
     for (var i = 0; i < ballots.length; i++) {
         if (ballots[i].length !== candidates.length) {
             result.append('Ballot #' + (i + 1) + ' doesn\'t have the same ' +
                 'length as there are canidates.<br />');
             return false;
         }
-        var numbers = createZeroFilledArray(candidates.length);
+        var numbers = createZeroFilledArray(candidates.length + 1);
         for (var j = 0; j < ballots[i].length; j++) {
-            if (ballots[i][j] < 1 || ballots[i][j] > candidates.length) {
+            if (ballots[i][j] < lowestAllowedRank || ballots[i][j] > candidates.length) {
                 result.append('Ballot #' + (i + 1) + ' Number #' + (j + 1) +
-                    ' isn\'t a number between 1 and the number of canidates.<br />');
+                    ' isn\'t a number between ' + lowestAllowedRank +
+                    ' and the number of canidates.<br />');
                 return false;
             }
-            numbers[ballots[i][j] - 1]++;
+            numbers[ballots[i][j]]++;
         }
-        for (var k = 0; k < numbers.length; k++) {
-            if (numbers[k] !== 1) {
-                result.append('Ballot #' + (i + 1) + ' doesn\'t have exactly one of every number.<br />');
-                return false;
+        if (incompleteBallots) {
+            var lastCount = 1;
+            for (var k = 1; k < numbers.length; k++) {
+                if (numbers[k] > 1) {
+                    result.append('Ballot #' + (i + 1) + ' one or more numbers are used more than once (zeros not counted).<br />');
+                    return false;
+                }
+                if (lastCount == 0 && numbers[k] === 1) {
+                    result.append('In Ballot #' + (i + 1) + ' one or more numbers are left out.<br />');
+                    return false;
+                }
+                lastCount = numbers[k];
+            }
+        } else {
+            for (var l = 1; l < numbers.length; l++) {
+                if (numbers[l] !== 1) {
+                    result.append('Ballot #' + (i + 1) + ' doesn\'t have exactly one of every number.<br />');
+                    return false;
+                }
             }
         }
     }
 
     return true;
+}
+
+function removeEmptyBallots(ballots) {
+    var ballotsToRemove = [];
+    for (var i = 0; i < ballots.length; i++) {
+        var allZeros = true;
+        for (var j = 0; j < ballots[i].length; j++) {
+            if (ballots[i][j] != 0) {
+                allZeros = false;
+            }
+        }
+        if (allZeros) {
+            ballotsToRemove.push(i);
+        }
+    }
+    for (i = 0; i < ballotsToRemove.length; i++) {
+        ballots.splice(ballotsToRemove[i], 1);
+    }
+    return ballots;
 }
 
 $(function() {
@@ -60,17 +96,21 @@ $(function() {
         result.html('');
         $('#result-group').show();
 
+        var incompleteBallots = $('#incompleteBallots').is(':checked');
         var candidateNames = $('#candidates').val().split('\n');
         var ballots = readBallots();
-        if (!validateInput(candidateNames, ballots)) {
+        if (!validateInput(candidateNames, ballots, incompleteBallots)) {
             return;
         }
-        result.append('You entered ' + candidateNames.length + ' candidates and ' +
-            ballots.length + ' ballots.<br />');
 
         var round = 0;
         do {
-            result.append('<br />Round #'+ (round + 1) +':<br />');
+            result.append('Round #'+ (round + 1) +':<br />');
+
+            ballots = removeEmptyBallots(ballots);
+
+            result.append('<br />' + candidateNames.length + ' candidates and ' +
+                ballots.length + ' ballots.<br />');
 
             var firstVotesCount = createZeroFilledArray(candidateNames.length);
             for (var i = 0; i < ballots.length; i++) {
@@ -143,7 +183,6 @@ $(function() {
 
             if (roundLosers.length > 1) {
                 var randomIndex = Math.round(Math.random() * (roundLosers.length - 1));
-                console.log(randomIndex);
                 roundLoser = roundLosers[randomIndex];
                 result.append(candidateNames[roundLoser] + ' was randomly selected as the loser of the round.<br />');
             }
@@ -158,6 +197,8 @@ $(function() {
                 ballots[i].splice(roundLoser, 1);
             }
             candidateNames.splice(roundLoser, 1);
+
+            result.append('<br />');
 
             round++;
         } while(true);
