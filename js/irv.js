@@ -17,14 +17,43 @@ var Irv = {
         return ballots;
     },
 
-    validateInput: function(candidates, ballots, incompleteBallots) {
-        if (candidates.length == 1 && $.trim(candidates['0']) === '') {
-            result.append('You didn\'t enter any candidates!<br />');
+    validateCandidates: function(candidates) {
+        if (candidates.length < 2) {
+            result.append('You didn\'t enter at least two candidates!<br />');
             return false;
         }
 
-        if (ballots.length == 1 && $.trim(ballots['0']) === '') {
+        for (var i = 0; i < candidates.length; i++) {
+            if ($.trim(candidates[i]) === '') {
+                result.append('Candidate # ' + (i + 1) + ' doesn\'t have a name.<br />');
+                return false;
+            }
+        }
+
+        return true;
+    },
+
+    validateBallots: function(ballots) {
+        if (ballots.length < 1 || (ballots.length === 1 && ballots[0][0] === 0)) {
             result.append('You didn\'t enter any ballots!<br />');
+            return false;
+        }
+
+        for (var i = 0; i < ballots.length; i++) {
+            if (ballots[i].length < 1 || (ballots[i].length === 1 && ballots[i][0] === 0)) {
+                result.append('Ballot # ' + (i + 1) + ' is empty<br />');
+                return false;
+            }
+        }
+
+        return true;
+    },
+
+    validateInput: function(candidates, ballots, incompleteBallots) {
+        if (!Irv.validateCandidates(candidates)) {
+            return false;
+        }
+        if (!Irv.validateBallots(ballots)) {
             return false;
         }
 
@@ -90,69 +119,115 @@ var Irv = {
         return ballots;
     },
 
+    countFirstVotes: function(candidatesCount, ballots) {
+        var firstVotesCount = Irv.createZeroFilledArray(candidatesCount);
+        for (var i = 0; i < ballots.length; i++) {
+            for (var j = 0; j < ballots[i].length; j++) {
+                if (ballots[i][j] === 1) {
+                    firstVotesCount[j]++;
+                }
+            }
+        }
+        return firstVotesCount;
+    },
+
+    calculateRoundWinners: function(firstVotes) {
+        var maxVotes = -1;
+        var roundWinners = [];
+        for (var i = 0; i < firstVotes.length; i++) {
+            if (firstVotes[i] > maxVotes) {
+                maxVotes = firstVotes[i];
+                roundWinners = [];
+                roundWinners.push(i);
+            } else if (firstVotes[i] == maxVotes) {
+                roundWinners.push(i);
+            }
+        }
+        return roundWinners;
+    },
+
+    calculateRoundLosers: function(firstVotes, ballotsCount) {
+        var minVotes = ballotsCount + 1;
+        var roundLosers = [];
+        for (var i = 0; i < firstVotes.length; i++) {
+            if (firstVotes[i] < minVotes) {
+                minVotes = firstVotes[i];
+                roundLosers = [];
+                roundLosers.push(i);
+            } else if (firstVotes[i] == minVotes) {
+                roundLosers.push(i);
+            }
+        }
+        return roundLosers;
+    },
+
+    removeLoserCandidate: function(candidateNames, roundLoser) {
+        candidateNames.splice(roundLoser, 1);
+        return candidateNames;
+    },
+
+    removeLoserFromBallots: function(ballots, roundLoser) {
+        for (var i = 0; i < ballots.length; i++) {
+            var loserRank = ballots[i][roundLoser];
+            if (loserRank > 0) {
+                for (var j = 0; j < ballots[i].length; j++) {
+                    if (ballots[i][j] > loserRank) {
+                        ballots[i][j]--;
+                    }
+                }
+            }
+            ballots[i].splice(roundLoser, 1);
+        }
+        return Irv.removeEmptyBallots(ballots);
+    },
+
+    candidateIndexToName: function(candidateNames, candidatesIndices) {
+        for (var i = 0; i < candidatesIndices.length; i++) {
+            candidatesIndices[i] = candidateNames[candidatesIndices[i]];
+        }
+        return candidatesIndices;
+    },
+
     calculateWinner: function(candidateNames, ballots) {
         var round = 0;
+
+        ballots = Irv.removeEmptyBallots(ballots);
+
         do {
             result.append('Round #'+ (round + 1) +':<br />');
-
-            ballots = Irv.removeEmptyBallots(ballots);
 
             result.append('<br />' + candidateNames.length + ' candidates and ' +
                 ballots.length + ' ballots.<br />');
 
-            var firstVotesCount = Irv.createZeroFilledArray(candidateNames.length);
-            for (var i = 0; i < ballots.length; i++) {
-                for (var j = 0; j < ballots[i].length; j++) {
-                    if (ballots[i][j] === 1) {
-                        firstVotesCount[j]++;
-                    }
-                }
-            }
+            var firstVotes = Irv.countFirstVotes(candidateNames.length, ballots);
 
-            var maxVotes = -1;
-            var minVotes = ballots.length + 1;
-            var roundWinners = [];
-            var roundLosers = [];
-            for (i = 0; i < firstVotesCount.length; i++) {
-                if (firstVotesCount[i] > maxVotes) {
-                    maxVotes = firstVotesCount[i];
-                    roundWinners = [];
-                    roundWinners.push(i);
-                } else if (firstVotesCount[i] == maxVotes) {
-                    roundWinners.push(i);
-                }
-                if (firstVotesCount[i] < minVotes) {
-                    minVotes = firstVotesCount[i];
-                    roundLosers = [];
-                    roundLosers.push(i);
-                } else if (firstVotesCount[i] == minVotes) {
-                    roundLosers.push(i);
-                }
-            }
-            var ratioOfWinnerVotes = firstVotesCount[roundWinners[0]] / ballots.length;
-            var ratioOfLoserVotes = firstVotesCount[roundLosers[0]] / ballots.length;
+            var roundWinners = Irv.calculateRoundWinners(firstVotes);
+            var roundLosers = Irv.calculateRoundLosers(firstVotes, ballots.length);
+
+            var ratioOfWinnerVotes = firstVotes[roundWinners[0]] / ballots.length;
+            var ratioOfLoserVotes = firstVotes[roundLosers[0]] / ballots.length;
 
             result.append('<br />Number of first votes per candidate:<br />');
-            for (i = 0; i < candidateNames.length; i++) {
-                result.append(candidateNames[i] + ': ' + firstVotesCount[i] + '<br />');
+            for (var i = 0; i < candidateNames.length; i++) {
+                result.append(candidateNames[i] + ': ' + firstVotes[i] + '<br />');
             }
 
             if (roundWinners.length === 1) {
                 result.append('<br />' + candidateNames[roundWinners[0]] + ' has the highest number of votes with ' +
-                    firstVotesCount[roundWinners[0]] + ' votes (' + (100 * ratioOfWinnerVotes)+
+                    firstVotes[roundWinners[0]] + ' votes (' + (100 * ratioOfWinnerVotes).toFixed(2) +
                     '%)<br />');
             } else {
                 result.append('<br />' + roundWinners.length + ' candidates have the highest number of votes with ' +
-                    firstVotesCount[roundWinners[0]] + ' votes (' + (100 * ratioOfWinnerVotes)+
+                    firstVotes[roundWinners[0]] + ' votes (' + (100 * ratioOfWinnerVotes).toFixed(2) +
                     '%)<br />');
             }
             if (roundLosers.length === 1) {
                 result.append(candidateNames[roundLosers[0]] + ' has the lowest number of votes with ' +
-                    firstVotesCount[roundLosers[0]] + ' votes (' + (100 * ratioOfLoserVotes)+
+                    firstVotes[roundLosers[0]] + ' votes (' + (100 * ratioOfLoserVotes).toFixed(2) +
                     '%)<br />');
             } else {
                 result.append(roundLosers.length + ' candidates have the lowest number of votes with ' +
-                    firstVotesCount[roundLosers[0]] + ' votes (' + (100 * ratioOfLoserVotes)+
+                    firstVotes[roundLosers[0]] + ' votes (' + (100 * ratioOfLoserVotes).toFixed(2) +
                     '%)<br />');
             }
 
@@ -161,12 +236,12 @@ var Irv = {
 
             if (ratioOfWinnerVotes > 0.5) {
                 result.append('<br />' + candidateNames[roundWinner] + ' won!<br />');
-                break;
+                return Irv.candidateIndexToName(candidateNames, roundWinners);
             }
 
             if (candidateNames.length == 2) {
                 result.append('<br />There are two candidates left and no one has over 50% of the votes.<br />');
-                break;
+                return Irv.candidateIndexToName(candidateNames, roundWinners);
             }
 
             if (roundLosers.length > 1) {
@@ -175,16 +250,8 @@ var Irv = {
                 result.append(candidateNames[roundLoser] + ' was randomly selected as the loser of the round.<br />');
             }
 
-            for (i = 0; i < ballots.length; i++) {
-                var loserRank = ballots[i][roundLoser];
-                for (j = 0; j < ballots.length; j++) {
-                    if (ballots[i][j] > loserRank) {
-                        ballots[i][j] = ballots[i][j] - 1;
-                    }
-                }
-                ballots[i].splice(roundLoser, 1);
-            }
-            candidateNames.splice(roundLoser, 1);
+            candidateNames = Irv.removeLoserCandidate(candidateNames, roundLoser);
+            ballots = Irv.removeLoserFromBallots(ballots, roundLoser);
 
             result.append('<br />');
 
