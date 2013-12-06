@@ -11,18 +11,20 @@
         <div class="container">
             <div class="page-header">
                 <h1>Instant-runoff voting tool</h1>
-                <p class="lead">A Website that helps you calculate the result of an Instant-runoff vote.</p>
+                <p class="lead">Calculate the result of an Instant-runoff vote from your browser.</p>
             </div>
 
             <h2>About</h2>
             <p>
-                This is a website that helps you calculate the result of an
+                This webapp calculates the result of an
                 <a href="https://en.wikipedia.org/wiki/Instant-runoff_voting">instant-runoff vote</a>.
                 It's programmed with javascript powered by <a href="http://jquery.com/">jQuery</a>
                 and structured and styled with HTML and CSS on the basis of
                 <a href="http://getbootstrap.com/">bootstrap</a>. The Sourcecode is licensed under the
                 <a href="http://opensource.org/licenses/MIT">MIT License</a> and available on
-                <a href="https://github.com/PeterTheOne/IRV">GitHub</a>. It was written by
+                <a href="https://github.com/PeterTheOne/IRV">GitHub</a>, contributions are welcome.
+                The code is <a href="./test/">unit-tested</a> with <a href="http://qunitjs.com/">QUnit</a>,
+                but that doesn't guarantee it being bug free. It was written by
                 <a href="http://petergrassberger.com">Peter Grassberger</a> aka.
                 <a href="https://twitter.com/PeterTheOne">PeterTheOne</a>.
             </p>
@@ -34,39 +36,58 @@
             <form role="form">
                 <div class="form-group col-md-6">
                     <h3>Candidates</h3>
-                    <p>Please enter the names of the candidates, one per line.</p>
-                    <p>Example:</p>
-                    <pre>Barack Obama<br />Mitt Romney<br />...</pre>
-                    <label for="candidates">Candidates</label>
-                    <textarea id="candidates" class="form-control" rows="3"></textarea>
+                    <p>
+                        Please enter the names of the candidates, one candidate per
+                        line. This list of candidates works like a template for the
+                        ballots. The order of candidates has significance, so be
+                        careful not to change the order of the candidates after
+                        entering the ballots.
+                    </p>
+                    <div class="col-md-4">
+                        <p>Example</p>
+                        <pre>Barack Obama<br />Vladimir Putin<br />Angela Merkel<br /></pre>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="candidates">Candidates</label>
+                        <textarea id="candidates" class="form-control" rows="5"></textarea>
+                    </div>
                 </div>
 
                 <div class="form-group col-md-6">
                     <h3>Ballots</h3>
                     <p>
                         Please enter one ballot per line. A ballot consists of
-                        ranking number <code>1 2 3 4 ...</code> in a row separated
-                        by a comma<code>,</code>. A ballot has the same amount
-                        of ranking numbers as there are candidates. The first number
-                        is the rank of the first candidate on this ballot, etc.
-                        Spaces are ignored.
+                        ranking numbers <code>1 2 3 4 ...</code> in a row separated
+                        by a comma <code>,</code>. A ballot has the same amount
+                        of ranking numbers as there are candidates. The numbers are
+                        in the same order as the candidates, the first number is the
+                        rank of the first candidate on this ballot and so on.
+                        Spaces are ignored. Incomplete ballots can be created by
+                        using <code>0</code> as a placeholder or leaving the
+                        position empty like this <code>1, 0, 2, , 3</code>.
                     </p>
-                    <p>Example:</p>
-                    <pre>3, 2, 1, 4<br />4, 3, 1, 2<br />1, 3, 4, 2<br />...</pre>
-                    <label for="ballots">Ballots</label>
-                    <textarea id="ballots" class="form-control" rows="3"></textarea>
+                    <div class="col-md-4">
+                        <p>Example</p>
+                        <pre>3, 2, 1<br />3, 2, 1<br />1, 2, 3<br />3, 1, 2<br />2, 3, 1<br />1, 2, 3</pre>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="ballots">Ballots</label>
+                        <textarea id="ballots" class="form-control" rows="10"></textarea>
 
-                    <input id="incompleteBallots" type="checkbox" /> <label for="incompleteBallots">Accept incomplete ballots</label>
+                        <input id="incompleteBallots" type="checkbox" /> <label for="incompleteBallots">Accept incomplete ballots</label>
+                    </div>
                 </div>
 
                 <button id="submit" type="submit" class="btn btn-default">Submit</button>
+
+                <hr />
             </form>
 
             <div id="result-group">
-                <hr />
-
                 <h2>Result</h2>
                 <pre id="result">Please submit your request.</pre>
+
+                <hr />
             </div>
 
         </div>

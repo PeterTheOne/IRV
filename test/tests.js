@@ -14,7 +14,7 @@ test('readBallots', function() {
     deepEqual(Irv.readBallots(ballotsText), [[1, 2, 3]], 'Read ballot without spaces.');
 
     ballotsText = '   1   ,   2   ,  3   ';
-    deepEqual(Irv.readBallots(ballotsText), [[1, 2, 3]], 'Read ballot many spaces.');
+    deepEqual(Irv.readBallots(ballotsText), [[1, 2, 3]], 'Read ballot with many spaces.');
 
     ballotsText = '1, 2, 3\n3, 2, 1\n1, 2, 3';
     deepEqual(Irv.readBallots(ballotsText), [[1, 2, 3], [3, 2, 1], [1, 2, 3]], 'Read multiple ballots.');
