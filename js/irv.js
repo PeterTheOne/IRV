@@ -1,5 +1,8 @@
 var Irv = {
     createZeroFilledArray: function(length) {
+        if (length < 0) {
+            return [];
+        }
         return Array.apply(null, new Array(length)).map(Number.prototype.valueOf,0);
     },
 
