@@ -73,18 +73,18 @@ function validateInput(candidates, ballots, incompleteBallots) {
 function removeEmptyBallots(ballots) {
     var ballotsToRemove = [];
     for (var i = 0; i < ballots.length; i++) {
-        var allZeros = true;
+        var ballotEmptyOrInvalid = true;
         for (var j = 0; j < ballots[i].length; j++) {
-            if (ballots[i][j] != 0) {
-                allZeros = false;
+            if (ballots[i][j] > 0) {
+                ballotEmptyOrInvalid = false;
             }
         }
-        if (allZeros) {
+        if (ballotEmptyOrInvalid) {
             ballotsToRemove.push(i);
         }
     }
     for (i = 0; i < ballotsToRemove.length; i++) {
-        ballots.splice(ballotsToRemove[i], 1);
+        ballots.splice(ballotsToRemove[i] - i, 1);
     }
     return ballots;
 }
