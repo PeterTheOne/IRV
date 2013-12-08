@@ -120,10 +120,14 @@ var Irv = {
     },
 
     countFirstVotes: function(candidatesCount, ballots) {
+        return Irv.countNVotes(1, candidatesCount, ballots);
+    },
+
+    countNVotes: function(n, candidatesCount, ballots) {
         var firstVotesCount = Irv.createZeroFilledArray(candidatesCount);
         for (var i = 0; i < ballots.length; i++) {
             for (var j = 0; j < ballots[i].length; j++) {
-                if (ballots[i][j] === 1) {
+                if (ballots[i][j] === n) {
                     firstVotesCount[j]++;
                 }
             }
@@ -161,6 +165,22 @@ var Irv = {
         return roundLosers;
     },
 
+    calculateRoundLosersOfCandidates: function(candidates, firstVotes, ballotsCount) {
+        var minVotes = ballotsCount + 1;
+        var roundLosers = [];
+        for (var i = 0; i < candidates.length; i++) {
+            var candidate = candidates[i];
+            if (firstVotes[candidate] < minVotes) {
+                minVotes = firstVotes[candidate];
+                roundLosers = [];
+                roundLosers.push(candidate);
+            } else if (firstVotes[candidate] == minVotes) {
+                roundLosers.push(candidate);
+            }
+        }
+        return roundLosers;
+    },
+
     removeLoserCandidate: function(candidateNames, roundLoser) {
         candidateNames.splice(roundLoser, 1);
         return candidateNames;
@@ -188,7 +208,7 @@ var Irv = {
         return candidatesIndices;
     },
 
-    calculateWinner: function(candidateNames, ballots) {
+    calculateWinner: function(candidateNames, ballots, tiebreakerSecondary) {
         var round = 0;
 
         ballots = Irv.removeEmptyBallots(ballots);
@@ -244,10 +264,26 @@ var Irv = {
                 return Irv.candidateIndexToName(candidateNames, roundWinners);
             }
 
+            if (roundLosers.length > 1 && tiebreakerSecondary) {
+                result.append('<br />');
+                var n = 2;
+                while (roundLosers.length > 1 && n <= candidateNames.length) {
+                    var nVotes = Irv.countNVotes(n, candidateNames.length, ballots);
+                    roundLosers = Irv.calculateRoundLosersOfCandidates(roundLosers, nVotes, ballots.length);
+                    result.append('Tiebreaker: Use ' + n + '. votes: ' + roundLosers.length + ' losers left.<br />');
+
+                    n++;
+                }
+                if (roundLosers.length === 1) {
+                    roundLoser = roundLosers[0];
+                    result.append('<br />Tiebreaker: ' + candidateNames[roundLoser] + ' was selected as the loser of the round.<br />');
+                }
+            }
+
             if (roundLosers.length > 1) {
                 var randomIndex = Math.round(Math.random() * (roundLosers.length - 1));
                 roundLoser = roundLosers[randomIndex];
-                result.append(candidateNames[roundLoser] + ' was randomly selected as the loser of the round.<br />');
+                result.append('<br />Tiebreaker: ' + candidateNames[roundLoser] + ' was randomly selected as the loser of the round.<br />');
             }
 
             candidateNames = Irv.removeLoserCandidate(candidateNames, roundLoser);

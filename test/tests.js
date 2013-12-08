@@ -93,6 +93,16 @@ test('countFirstVotes', function() {
     deepEqual(Irv.countFirstVotes(3, [[0, 1, 0], [0, 0, 1], [0, 0, 1]]), [0, 1, 2]);
 });
 
+test('countNVotes', function() {
+    var ballots = [[1, 2, 3], [2, 1, 3], [2, 1, 3], [3, 2, 1], [3, 2, 1], [3, 2, 1]];
+
+    deepEqual(Irv.countNVotes(2, 3, ballots), [2, 4, 0]);
+    deepEqual(Irv.countNVotes(1, 3, []), [0, 0, 0]);
+    deepEqual(Irv.countNVotes(1, 3, [[0, 0, 0], [0, 0, 0]]), [0, 0, 0]);
+    deepEqual(Irv.countNVotes(1, 3, [[0, -1, -2]]), [0, 0, 0]);
+    deepEqual(Irv.countNVotes(1, 3, [[0, 1, 0], [0, 0, 1], [0, 0, 1]]), [0, 1, 2]);
+});
+
 test('calculateRoundWinners', function() {
     deepEqual(Irv.calculateRoundWinners([1, 0, 0]), [0]);
     deepEqual(Irv.calculateRoundWinners([1, 1, 1]), [0, 1, 2]);
@@ -105,6 +115,13 @@ test('calculateRoundLosers', function() {
     deepEqual(Irv.calculateRoundLosers([1, 1, 1], 3), [0, 1, 2]);
     deepEqual(Irv.calculateRoundLosers([2, 1, 1], 3), [1, 2]);
     deepEqual(Irv.calculateRoundLosers([7, 5, 99], 111), [1]);
+    deepEqual(Irv.calculateRoundLosers([0, 1, 0], 3), [0, 2]);
+});
+
+test('calculateRoundLosersOfCandidates', function() {
+    deepEqual(Irv.calculateRoundLosersOfCandidates([0, 1, 2], [2, 1, 0], 3), [2], 'Calculate round losers of all candidates.');
+    deepEqual(Irv.calculateRoundLosersOfCandidates([0, 1], [2, 1, 0], 3), [1], 'Calculate round losers of only the first two candidates.');
+    deepEqual(Irv.calculateRoundLosersOfCandidates([0, 1, 2], [0, 1, 0], 3), [0, 2]);
 });
 
 test('removeLoserCandidate', function() {
@@ -124,7 +141,7 @@ test('removeLoserFromBallots', function() {
 test('calculateWinner', function() {
     var candidates = ['Obama', 'Putin', 'Merkel'];
     var ballots = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [3, 1, 2], [2, 1, 3], [3, 2, 1]];
-    deepEqual(Irv.calculateWinner(candidates, ballots), ['Obama']);
+    deepEqual(Irv.calculateWinner(candidates, ballots, false), ['Obama']);
 
     // todo: test more examples.
 });

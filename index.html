@@ -73,12 +73,35 @@
                     <div class="col-md-8">
                         <label for="ballots">Ballots</label>
                         <textarea id="ballots" class="form-control" rows="10"></textarea>
-
-                        <input id="incompleteBallots" type="checkbox" /> <label for="incompleteBallots">Accept incomplete ballots</label>
                     </div>
                 </div>
 
-                <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+
+                <div class="form-group">
+                    <h3>Options</h3>
+
+                    <div class="checkbox">
+                        <label>
+                            <input id="incompleteBallots" type="checkbox">
+                            Accept incomplete or partial ballots.
+                        </label>
+                    </div>
+
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="tiebreaker" id="tiebreakerRandom" value="random" checked>
+                            Tiebreaker: Randomly choose a candidate to break the tie.
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="tiebreaker" id="tiebreakerSecondary" value="secondary">
+                            Tiebreaker: Before choosing randomly try to use second, third, etc. votes to break the tie.
+                        </label>
+                    </div>
+
+                    <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+                </div>
 
                 <hr />
             </form>

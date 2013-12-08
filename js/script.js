@@ -16,12 +16,13 @@ $(function() {
         $('#submit').html('Re-Submit').removeClass('btn-primary').addClass('btn-success');
         $('#result-group').show();
 
-        var incompleteBallots = $('#incompleteBallots').is(':checked');
         var candidateNames = $('#candidates').val().split('\n');
         var ballots = Irv.readBallots($('#ballots').val());
+        var incompleteBallots = $('#incompleteBallots').is(':checked');
+        var tiebreakerSecondary = $('#tiebreakerSecondary').is(":checked");
 
         if (Irv.validateInput(candidateNames, ballots, incompleteBallots)) {
-            Irv.calculateWinner(candidateNames, ballots);
+            Irv.calculateWinner(candidateNames, ballots, tiebreakerSecondary);
         }
 
         $('html, body').animate({scrollTop: $(document).height()}, 'slow');
