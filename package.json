@@ -18,6 +18,8 @@
   "gitHead": "6b73d63c6a7c2de8f9d49cc406ab359c6a00f93a",
   "devDependencies": {
     "grunt": "~0.4.4",
-    "grunt-contrib-qunit": "~0.4.0"
+    "grunt-contrib-qunit": "~0.4.0",
+    "grunt-coveralls": "~0.3.0",
+    "grunt-qunit-istanbul": "~0.4.0"
   }
 }
