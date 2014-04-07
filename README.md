@@ -16,4 +16,4 @@ was written by [Peter Grassberger](http://petergrassberger.com) aka.
 
 Code status
 -----------
-[![Build Status](https://travis-ci.org/PeterTheOne/IRV.svg?branch=master)](https://travis-ci.org/PeterTheOne/IRV) [![Coverage Status](https://coveralls.io/repos/PeterTheOne/IRV/badge.png)](https://coveralls.io/r/PeterTheOne/IRV)
+[![Build Status](https://travis-ci.org/PeterTheOne/IRV.svg?branch=master)](https://travis-ci.org/PeterTheOne/IRV)
