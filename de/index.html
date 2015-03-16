@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+
+        <title>Rangfolgewahl (IRV) Werkzeug</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="page-header">
+                <h1>Rangfolgewahl Berechnungswerkzeug</h1>
+                <p class="lead">Berechnet das Ergebnis einer Rangfolgewahl (IRV) in deinen Browser.</p>
+                <nav class="language">
+                    <ul>
+                        <li>
+                            <a href="./">Deutsch</a>
+                        </li>
+                        <li>
+                            <a href="../">English</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <h2>Einleitung</h2>
+            <p>
+                Diese Webapplikation berechnet das Ergebnis von einer
+                <a href="https://de.wikipedia.org/wiki/Instant-Runoff-Voting">Rangfolgewahl</a>
+                (abgekürzt <em>IRV</em>, englisch <em>instant-runoff voting</em>).
+                Es wurde in javascript mit Hilfe von <a href="http://jquery.com/">jQuery</a>
+                aufgebaut und gestaltet in HTML und CSS auf Basis von
+                <a href="http://getbootstrap.com/">bootstrap</a>.
+                Der Quellcode ist lizenziert unter der <a href="http://opensource.org/licenses/MIT">MIT License</a>
+                und auf <a href="https://github.com/PeterTheOne/IRV">GitHub</a> zur Verfügung gestellt,
+                mithilfe ist sehr willkommen. Der Programmcode ist <a href="./test/">unit getested</a>
+                mit <a href="http://qunitjs.com/">QUnit</a>, aber dass heißt jedoch nicht, dass
+                er damit garantiert fehlerfrei ist. Es wurde geschrieben von
+                <a href="http://petergrassberger.at">Peter Grassberger</a>, auch bekannt als
+                <a href="https://twitter.com/PeterTheOne">PeterTheOne</a>.
+            </p>
+
+            <hr />
+
+            <h2>Eingabe</h2>
+
+            <form role="form">
+                <div class="form-group col-md-6">
+                    <h3>Kandidatinnen und Kandidaten</h3>
+                    <p>
+                        Bitte fügen Sie die Namen der Kandidaten und Kandidatinnen ein, immer einen Namen pro Zeile.
+                        Diese Liste kann man sich wie eine Vorlage für einen Stimmzettel vorstellen.
+                        Die Reihenfolge der Namen macht einen Unterschied für die Berechnung,
+                        deshalb sollte man vorsichtig sein wenn man die Reihenfolge im Nachhinein ändert.
+                    </p>
+                    <div class="col-md-4">
+                        <p>Beispiel</p>
+                        <pre>Barack Obama<br />Vladimir Putin<br />Angela Merkel<br /></pre>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="candidates">KandidatInnen Liste</label>
+                        <textarea id="candidates" class="form-control" rows="5" placeholder="Tragen Sie hier die Namen ein..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <h3>Stimmzettel</h3>
+                    <p>
+                        Bitte tragen sie hier die ausgefüllten Stimmzettel ein, immer nur einen pro Zeile.
+                        Ein Stimmzettel besteht aus Rangnummern <code>1 2 3 4 ...</code> die hinter
+                        einander geschrieben werden und jeweils mit einem comma <code>,</code> getrennt.
+                        Ein Stimmzettel hat genau so viele Nummern wie es Kandidatinnen und Kandidaten gibt.
+                        Die Nummer werden in der Reihenfolge der Kandidaten geschrieben, die
+                        erste Nummer ist der Rang von der ersten Kandidatin auf dem Stimmzettel, die
+                        zweite Nummer ist der Rang vom zweiten Kandidaten und so weiter.
+                        Leerzeilen werden ignoriert. Unvollständige Stimmzettel können eingegeben werden
+                        indem eine <code>0</code> als Platzhalter verwendet wird oder die Position
+                        freigelassen wird, so wie in hier <code>1, 0, 2, , 3</code>.
+                    </p>
+                    <div class="col-md-4">
+                        <p>Beispiel</p>
+                        <pre>3, 2, 1<br />3, 2, 1<br />1, 2, 3<br />3, 1, 2<br />2, 3, 1<br />1, 2, 3</pre>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="ballots">Stimmzettel Liste</label>
+                        <textarea id="ballots" class="form-control" rows="10" placeholder="Tragen Sie hier die Stimmzettel ein..."></textarea>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <h3>Einstellungen</h3>
+
+                    <div class="checkbox">
+                        <label>
+                            <input id="incompleteBallots" type="checkbox">
+                            Erlaube unvollständige bzw. teilweise ausgefüllte Stimmzettel.
+                        </label>
+                    </div>
+
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="tiebreaker" id="tiebreakerRandom" value="random" checked>
+                            Gleichstandsbrecher: Wähle eine zufällige Kandidatin um den Gleichstand aufzubrechen.
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="tiebreaker" id="tiebreakerSecondary" value="secondary">
+                            Gleichstandsbrecher: Versuche zuerst die zweit, dritt, etc. Stimmen zu verwenden um den Gleichstand aufzubrechen.
+                        </label>
+                    </div>
+
+                    <button id="submit" type="submit" class="btn btn-primary">Abschicken</button>
+                </div>
+
+                <hr />
+            </form>
+
+            <div id="result-group">
+                <h2>Ergebnis</h2>
+                <pre id="result">Please submit your request.</pre>
+
+                <hr />
+            </div>
+
+        </div>
+
+
+        <script src="../js/lib/jquery-1.10.2.js"></script>
+        <script src="../bootstrap/js/bootstrap.min.js"></script>
+        <script src="../js/irv.js"></script>
+        <script src="../js/script.js"></script>
+    </body>
+</html>

@@ -1,3 +1,24 @@
 #result-group {
     display: none;
 }
+
+div.page-header {
+    position: relative;
+}
+
+nav.language {
+    position: absolute;
+    right: 20px;
+    top: -30px;
+}
+
+nav.language ul {
+    display: inline-block;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav.language li {
+    display: inline-block;
+}
