@@ -22,3 +22,17 @@ nav.language ul {
 nav.language li {
     display: inline-block;
 }
+
+table.ballot-collection tr {
+    border: 2px solid;
+}
+
+table.ballot-collection th {
+    border: 2px solid;
+}
+
+table.ballot-collection td {
+    border: 2px solid;
+    width: 50px;
+    height: 50px;
+}
