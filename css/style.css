@@ -22,3 +22,15 @@ nav.language ul {
 nav.language li {
     display: inline-block;
 }
+
+#thresholdbox {
+    width: 10rem;
+    float: right;
+    margin-left: 1rem;
+}
+
+#thresholdcontainer {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+}

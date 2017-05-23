@@ -38,7 +38,7 @@
                 The code is <a href="./test/">unit-tested</a> with <a href="http://qunitjs.com/">QUnit</a>,
                 but that doesn't guarantee it being bug free. It was written by
                 <a href="http://petergrassberger.com">Peter Grassberger</a> aka.
-                <a href="https://twitter.com/PeterTheOne">PeterTheOne</a>.
+                <a href="https://twitter.com/PeterTheOne">PeterTheOne</a>, with victory threshold option added by <a href="http://wtadler.com">Will Adler</a>.
             </p>
 
             <hr />
@@ -113,6 +113,14 @@
                             Tiebreaker: Before choosing randomly try to use second, third, etc. votes to break the tie.
                         </label>
                     </div>
+
+                    <label id="thresholdcontainer">
+                        Victory threshold:
+                        <div class="input-group" id="thresholdbox">
+                            <input type="text" class="form-control decimal" id="threshold" name="threshold" placeholder="50">
+                            <span class="input-group-addon">%</span>
+                        </div>
+                    </label>
 
                     <button id="submit" type="submit" class="btn btn-primary">Submit</button>
                 </div>
