@@ -41,7 +41,7 @@ var Irv = {
 
         for (var i = 0; i < ballots.length; i++) {
             if (ballots[i].length < 1 || (ballots[i].length === 1 && ballots[i][0] === 0)) {
-                result.append('Ballot # ' + (i + 1) + ' is empty<br />');
+                result.append('Ballot # ' + (i + 1) + ' is empty.<br />');
                 return false;
             }
         }
@@ -49,19 +49,32 @@ var Irv = {
         return true;
     },
 
-    validateInput: function(candidates, ballots, incompleteBallots) {
+    validateThreshold: function(threshold) {
+        if ((threshold >= 100 || threshold <= 0) || !String(threshold).match(/^[0-9]*\.?[0-9]*$/)){
+            result.append('Victory threshold percentage must be a number greater than 0 and less than 100.<br />');
+            return false;
+        }
+
+        return true;
+    },
+
+    validateInput: function(candidates, ballots, incompleteBallots, threshold) {
         if (!Irv.validateCandidates(candidates)) {
             return false;
         }
         if (!Irv.validateBallots(ballots)) {
             return false;
         }
+        if (!Irv.validateThreshold(threshold)) {
+            return false;
+        }
+
 
         var lowestAllowedRank = incompleteBallots ? 0 : 1;
         for (var i = 0; i < ballots.length; i++) {
             if (ballots[i].length !== candidates.length) {
                 result.append('Ballot #' + (i + 1) + ' doesn\'t have the same ' +
-                    'length as there are canidates.<br />');
+                    'length as there are candidates.<br />');
                 return false;
             }
             var numbers = Irv.createZeroFilledArray(candidates.length + 1);
@@ -69,7 +82,7 @@ var Irv = {
                 if (ballots[i][j] < lowestAllowedRank || ballots[i][j] > candidates.length) {
                     result.append('Ballot #' + (i + 1) + ' Number #' + (j + 1) +
                         ' isn\'t a number between ' + lowestAllowedRank +
-                        ' and the number of canidates.<br />');
+                        ' and the number of candidates.<br />');
                     return false;
                 }
                 numbers[ballots[i][j]]++;
@@ -208,7 +221,7 @@ var Irv = {
         return candidatesIndices;
     },
 
-    calculateWinner: function(candidateNames, ballots, tiebreakerSecondary) {
+    calculateWinner: function(candidateNames, ballots, tiebreakerSecondary, threshold) {
         var round = 0;
 
         ballots = Irv.removeEmptyBallots(ballots);
@@ -254,13 +267,13 @@ var Irv = {
             var roundWinner = roundWinners[0];
             var roundLoser = roundLosers[0];
 
-            if (ratioOfWinnerVotes > 0.5) {
+            if (ratioOfWinnerVotes > threshold/100) {
                 result.append('<br />' + candidateNames[roundWinner] + ' won!<br />');
                 return Irv.candidateIndexToName(candidateNames, roundWinners);
             }
 
             if (candidateNames.length == 2) {
-                result.append('<br />There are two candidates left and no one has over 50% of the votes.<br />');
+                result.append('<br />There are two candidates left and no one has over ' + threshold + '% of the votes.<br />');
                 return Irv.candidateIndexToName(candidateNames, roundWinners);
             }
 
