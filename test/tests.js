@@ -43,8 +43,8 @@ test('validateBallots', function() {
 test('validateInput', function() {
     var candidates = ['Obama', 'Putin', 'Merkel'];
     var ballots = [[1, 2, 3], [3, 2, 1], [1, 3, 2], [2, 1, 3]];
-
-    ok(Irv.validateInput(candidates, ballots, false));
+    var threshold = 50;
+    ok(Irv.validateInput(candidates, ballots, false, threshold));
 
     // todo: write more test for validateInput
 });
@@ -141,7 +141,17 @@ test('removeLoserFromBallots', function() {
 test('calculateWinner', function() {
     var candidates = ['Obama', 'Putin', 'Merkel'];
     var ballots = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [3, 1, 2], [2, 1, 3], [3, 2, 1]];
-    deepEqual(Irv.calculateWinner(candidates, ballots, false), ['Obama']);
+    var threshold = 50;
+    deepEqual(Irv.calculateWinner(candidates, ballots, false, threshold), ['Obama']);
+
+    candidates = ['Obama', 'Putin', 'Merkel'];
+    ballots = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [3, 1, 2], [3, 1, 2], [3, 2, 1], [3, 2, 1], [3, 2, 1]];
+    deepEqual(Irv.calculateWinner(candidates, ballots, false, 50), ['Merkel']);
+
+    candidates = ['Obama', 'Putin', 'Merkel'];
+    ballots = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [3, 1, 2], [3, 1, 2], [3, 2, 1], [3, 2, 1], [3, 2, 1]];
+    deepEqual(Irv.calculateWinner(candidates, ballots, false, 40), ['Obama']);
+
 
     // todo: test more examples.
 });

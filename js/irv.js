@@ -267,7 +267,7 @@ var Irv = {
             var roundWinner = roundWinners[0];
             var roundLoser = roundLosers[0];
 
-            if (ratioOfWinnerVotes > threshold/100) {
+            if (ratioOfWinnerVotes > threshold / 100) {
                 result.append('<br />' + candidateNames[roundWinner] + ' won!<br />');
                 return Irv.candidateIndexToName(candidateNames, roundWinners);
             }

@@ -22,9 +22,6 @@ $(function() {
         var incompleteBallots = $('#incompleteBallots').is(':checked');
         var tiebreakerSecondary = $('#tiebreakerSecondary').is(":checked");
         var threshold = $('#threshold').val();
-        if (threshold == '') {
-            threshold = 50;
-        }
 
         if (Irv.validateInput(candidateNames, ballots, incompleteBallots, threshold)) {
             Irv.calculateWinner(candidateNames, ballots, tiebreakerSecondary, threshold);
