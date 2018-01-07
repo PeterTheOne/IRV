@@ -74,7 +74,8 @@ var Irv = {
         for (var i = 0; i < ballots.length; i++) {
             if (ballots[i].length !== candidates.length) {
                 result.append('Ballot #' + (i + 1) + ' doesn\'t have the same ' +
-                    'length as there are candidates.<br />');
+                    'length (' + ballots[i].length + ') as there are candidates (' +
+                        candidates.length + ').<br />');
                 return false;
             }
             var numbers = Irv.createZeroFilledArray(candidates.length + 1);
