@@ -19,7 +19,7 @@
   "devDependencies": {
     "grunt": "0.4.5",
     "grunt-contrib-qunit": "0.7.0",
-    "grunt-coveralls": "0.3.0",
+    "grunt-coveralls": "2.0.0",
     "grunt-qunit-istanbul": "1.1.0"
   }
 }
